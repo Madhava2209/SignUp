@@ -1,0 +1,12 @@
+{
+  "name": "lh-signup",
+  "version": "0.0.1",
+  "description": "A Quasar Framework app",
+  "author": "Madhava2209 <52972972+Madhava2209@users.noreply.github.com>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^2.4.6",
+    "@capacitor/cli": "^2.0.0",
+    "@capacitor/core": "^2.0.0"
+  }
+}
