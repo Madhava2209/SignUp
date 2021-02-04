@@ -38,11 +38,13 @@
         </q-tab-panels>
           <p style="color:red;padding: 10px;text-align:center">{{errorMessage}}</p>
         <p color='primary' style="text-align:center; color:blue; font-size:large">Or</p>
-        <p style="text-align: center">Login/Register with Google <q-btn rounded style="font-size:20px" pointer>G</q-btn></p>
+        <p style="text-align: center">Login/Register with Google <q-btn rounded style="font-size:20px" pointer @click="googleSignUp">G</q-btn></p>
       </q-card>
   </q-page>
 </template>
 <script>
+import {firebaseAuth, firebaseDB} from 'boot/firebase'
+import firebase from 'firebase'
 export default {
   data () {
     return {
@@ -66,7 +68,7 @@ export default {
         const email_valid = this.emailValidation()
         if (email_valid) {
           this.error = ''
-          this.$router.push('/success')
+          this.loginUser()
         } else {
           this.error = 'Invalid email address'
         }
@@ -80,7 +82,7 @@ export default {
         }
         else {
           this.error = ''
-          this.$router.push('/success')
+          this.registerUser()
         }   
       }
     },
@@ -102,7 +104,52 @@ export default {
                       return true
                     }
       return false
-    }
+    },
+    registerUser () {
+    firebaseAuth.createUserWithEmailAndPassword(this.email, this.password)
+      .then(res => {
+        console.log(res)
+        const userId = firebaseAuth.currentUser.uid
+        firebaseDB.ref('users/' + userId).set({
+          firstName: this.firstName,
+          email: this.email,
+          lastName: this.lastName
+        })
+        this.$router.push('/success')
+      })
+      .catch(err => {
+        this.error = err
+        alert(err)
+      })
+  },
+  loginUser () {
+    firebaseAuth.signInWithEmailAndPassword(this.email, this.password)
+      .then(res => {
+        console.log(res)
+        this.$router.push('/success')
+      })
+      .catch(err => {
+        this.error = err
+      })
+  },
+  googleSignUp () {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    firebaseAuth.signInWithPopup(provider).then(res => {
+      console.log(res)
+      if (res.additionalUserInfo.isNewUser) {
+        const userId = firebaseAuth.currentUser.uid
+        firebaseDB.ref('users/' + userId).set({
+          fullName: res.additionalUserInfo.profile.name,
+          email: res.additionalUserInfo.profile.email
+        })
+        this.$router.push('/success')
+      } else {
+        this.$router.push('/success')
+      }
+    }).catch(err => {
+      this.error = err
+    })
+  }
   }
 }
 </script>
