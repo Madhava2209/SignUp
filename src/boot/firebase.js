@@ -3,7 +3,6 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 
-// paste the credentials 
 
 // Initialize Firebase
 const firebaseApp = firebase.initializeApp(firebaseConfig)
